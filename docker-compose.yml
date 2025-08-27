@@ -1,0 +1,58 @@
+# ------------------------------------------------------------------------------
+# docker-compose.yml
+# Neo4j 5 Community with APOC + Graph Data Science (GDS) plugins.
+# This is perfect for local learning. For larger datasets, increase memory.
+# ------------------------------------------------------------------------------
+version: "3.9"
+
+services:
+  neo4j:
+    image: ${NEO4J_IMAGE}
+    container_name: ${NEO4J_CONTAINER_NAME}
+    restart: unless-stopped
+
+    # Expose Neo4j Browser (HTTP) and Bolt driver port
+    ports:
+      - "${NEO4J_HTTP_PORT}:7474"
+      - "${NEO4J_BOLT_PORT}:7687"
+
+    environment:
+      # Auth
+      - NEO4J_AUTH=${NEO4J_USERNAME}/${NEO4J_PASSWORD}
+
+      # Enable Labs plugins: APOC + Graph Data Science
+      - NEO4JLABS_PLUGINS=["apoc","graph-data-science"]
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=${NEO4J_ACCEPT_LICENSE_AGREEMENT}
+
+      # Security/procedures (allow APOC & GDS procs)
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*
+
+      # Memory tuning (increase if you have RAM)
+      - NEO4J_server_memory_heap_initial__size=${NEO4J_HEAP_SIZE}
+      - NEO4J_server_memory_heap_max__size=${NEO4J_HEAP_SIZE}
+      - NEO4J_server_memory_pagecache_size=${NEO4J_PAGECACHE}
+
+      # QoL settings
+      - NEO4J_server_http_access__control_allow__origin=*
+      - NEO4J_server_http_access__control_allow__credentials=true
+
+    volumes:
+      # Persist databases/plugins/logs on your host
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_plugins:/plugins
+      - neo4j_import:/import
+
+    healthcheck:
+      # Simple healthcheck: ensure Bolt responds
+      test: ["CMD", "bash", "-lc", "echo 'RETURN 1;' | cypher-shell -u ${NEO4J_USERNAME} -p ${NEO4J_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_plugins:
+  neo4j_import:

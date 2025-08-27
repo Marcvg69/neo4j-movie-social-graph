@@ -1,0 +1,13 @@
+
+01_notes_loading.txt
+
+Load the base dataset from the official Movies example before running the rest:
+
+Option A: load dump
+- From neo4j-graph-examples/movies, get data/movies-40.dump
+- Load with neo4j-admin (Neo4j 5): neo4j-admin database load --from=movies-40.dump --database=neo4j --force
+
+Option B: run Cypher loader
+- From neo4j-graph-examples/movies, run scripts/movies.cypher via Cypher Shell or Browser
+
+Once loaded, continue with 00_constraints, then optional 02_enrich_genres_optional.

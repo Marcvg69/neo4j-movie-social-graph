@@ -1,6 +1,6 @@
 """
 scripts/run_cypher.py
-Run one or more Cypher files against your Neo4j database using the Python driver.
+Run one or more Cypher files against the Neo4j database using the Python driver.
 
 Usage:
   # Load environment (NEO4J_USERNAME/PASSWORD) from .env and run a single file
